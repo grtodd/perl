@@ -154,7 +154,7 @@ typedef enum {
 
 #ifndef PERL_CORE
 /* Although Fast Boyer Moore tables are now being stored in PVGVs, for most
-   purposes eternal code wanting to consider PVBM probably needs to think of
+   purposes external code wanting to consider PVBM probably needs to think of
    PVMG instead.  */
 #  define SVt_PVBM	SVt_PVMG
 /* Anything wanting to create a reference from clean should ensure that it has
