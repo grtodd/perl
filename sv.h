@@ -928,6 +928,7 @@ in gv.h: */
 #define HvAMAGIC_off(hv)	(SvFLAGS(hv) &=~ SVf_AMAGIC)
 
 
+/* "nog" means "doesn't have get magic" */
 #define SvPOK_nog(sv)		((SvFLAGS(sv) & (SVf_POK|SVs_GMG)) == SVf_POK)
 #define SvIOK_nog(sv)		((SvFLAGS(sv) & (SVf_IOK|SVs_GMG)) == SVf_IOK)
 #define SvUOK_nog(sv)		((SvFLAGS(sv) & (SVf_IOK|SVf_IVisUV|SVs_GMG)) == (SVf_IOK|SVf_IVisUV))
