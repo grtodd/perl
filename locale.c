@@ -57,6 +57,9 @@ S_stdize_locale(pTHX_ char *locs)
 
     PERL_ARGS_ASSERT_STDIZE_LOCALE;
 
+    /* This doesn't handle lists of locales */
+    assert(! strchr(locs, ' '));
+
     if (s) {
 	const char * const t = strchr(s, '.');
 	okay = FALSE;
