@@ -120,7 +120,10 @@ Type flag for formats.  See L</svtype>.
 Type flag for I/O objects.  See L</svtype>.
 
 =cut
+
+  These are ordered so that the simpler types have a lower value.
 */
+
 
 typedef enum {
 	SVt_NULL,	/* 0 */
@@ -526,6 +529,14 @@ struct xpvlv {
     char	xlv_type;	/* k=keys .=pos x=substr v=vec /=join/re
 				 * y=alem/helem/iter t=tie T=tied HE */
     char	xlv_flags;	/* 1 = negative offset  2 = negative len */
+};
+
+struct xpvinvlist {
+    _XPV_HEAD;
+    IV          prev_index;
+    STRLEN	iterator;
+    STRLEN	count;
+    bool	is_offset;	/* */
 };
 
 /* This structure works in 3 ways - regular scalar, GV with GP, or fast
