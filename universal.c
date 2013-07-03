@@ -1313,6 +1313,49 @@ XS(XS_re_regexp_pattern)
     /* NOT-REACHED */
 }
 
+XS(XS_IO_Handle_DESTROY)
+{
+    dVAR;
+    dXSARGS;
+    SV *arg;
+    GV *gv = NULL;
+    IO *io = NULL;
+
+    if (!items) XSRETURN(0);
+    arg = ST(0);
+    SvGETMAGIC(arg);
+    if (SvROK(arg)) arg = SvRV(arg);
+    if (isGV(arg)) {
+        gv = (GV *)arg;
+        io = GvIO(gv);
+    }
+    else if (SvTYPE(arg) == SVt_PVIO)
+        io = (IO *)arg;
+
+    if (io && IoIFP(io) && IoIFP(io) != PerlIO_stdin() &&
+                           IoIFP(io) != PerlIO_stdout() &&
+                           IoIFP(io) != PerlIO_stderr()) {
+        const bool success = io_close(io, FALSE);
+        if (success) {
+            if (gv)
+                Perl_ck_warner(aTHX_ packWARN(WARN_IO),
+                                    "Handle %"HEKf" implicitly closed",
+                                     GvNAME_HEK(gv));
+            else Perl_ck_warner(aTHX_ packWARN(WARN_IO),
+                                     "Handle implicitly closed");
+        }
+        else {
+            if (gv)
+                Perl_ck_warner_d(aTHX_ packWARN(WARN_IO),
+                                      "Error closing handle %"HEKf": %"SVf,
+                                       GvNAME_HEK(gv), get_sv("!",GV_ADD));
+            else Perl_ck_warner_d(aTHX_ packWARN(WARN_IO),
+                                       "Error closing handle: %"SVf,
+                                        get_sv("!",GV_ADD));
+        }
+    }
+    XSRETURN(0);
+}
 struct xsub_details {
     const char *name;
     XSUBADDR_t xsub;
@@ -1369,6 +1412,7 @@ const struct xsub_details details[] = {
     {"re::regnames", XS_re_regnames, ";$"},
     {"re::regnames_count", XS_re_regnames_count, ""},
     {"re::regexp_pattern", XS_re_regexp_pattern, "$"},
+    {"IO::Handle::DESTROY", XS_IO_Handle_DESTROY, NULL},
 };
 
 void
